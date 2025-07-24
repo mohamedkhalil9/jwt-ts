@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import asyncHandler from "../utils/asyncHandler.ts";
 import AppError from "../utils/appError.ts";
 import { verifyToken } from "../utils/verifyToken.ts";
+import User from "../models/user.model.ts";
 
 export const authenticate = (
   req: Request,
@@ -17,8 +17,11 @@ export const authenticate = (
   next();
 };
 
-export const authorize = (...roles) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    // const user = await
+export const authorize = (...roles: string[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const user = await User.findById(req.user.id);
+
+    if (!roles.includes(user.role)) throw new AppError("Access Denied", 403);
+    next();
   };
 };
