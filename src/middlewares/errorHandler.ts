@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import AppError from "../utils/appError";
 
 const notFound = (req: Request, res: Response, next: NextFunction) => {
   return res
@@ -7,13 +8,13 @@ const notFound = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const globalErrorHandler = (
-  error,
+  error: AppError,
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   res.status(error.statusCode || 500).json({
-    status: error.statusText || "error",
+    status: error.status || "Error",
     message: error.message,
     code: error.statusCode || 500,
     data: null,
