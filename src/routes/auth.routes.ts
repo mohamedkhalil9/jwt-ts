@@ -9,11 +9,13 @@ import {
   resetPassword,
   refreshToken,
 } from "../controllers/auth.controller.ts";
+import { registerSchema, loginSchema } from "../schemas/user.schema.ts";
+import { validateBody } from "../middlewares/validation.middleware.ts";
 
 const authRouter = Router();
 
-authRouter.post("/register", register);
-authRouter.post("/login", login);
+authRouter.post("/register", validateBody(registerSchema), register);
+authRouter.post("/login", validateBody(loginSchema), login);
 authRouter.post("/logout", logout);
 
 authRouter.get("/google", passportOauth);
