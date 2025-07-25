@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import AppError from "./appError.ts";
+import { verifyEmailTemplate, resetPassTemplate } from "./emailTemplates.ts";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -24,12 +25,19 @@ const sendEmail = async (email: string, subject: string, template: string) => {
   }
 };
 
-const sendResetPasswordEmail = (email: string, otp: string) => {
-  const resetPasswordTemplate = `${otp}`;
+export const sendResetPasswordEmail = (email: string, otp: string) => {
+  let resetPasswordTemplate = resetPassTemplate;
+  resetPasswordTemplate = resetPasswordTemplate.replace(/{{OTP_CODE}}/g, otp);
+  for (let i = 0; i < 6; i++) {
+    resetPasswordTemplate = resetPasswordTemplate.replace(
+      `{{DIGIT_${i + 1}}}`,
+      otp[i],
+    );
+  }
   sendEmail(email, "Reset Password", resetPasswordTemplate);
 };
 
-const sendVerifyEmail = (email: string, token: string) => {
-  const verifyEmailTemplate = `${token}`;
-  sendEmail(email, "Verify Email", verifyEmailTemplate);
+export const sendVerifyEmail = (email: string, token: string) => {
+  const verifyTemplate = verifyEmailTemplate(token);
+  sendEmail(email, "Verify Email", verifyTemplate);
 };
